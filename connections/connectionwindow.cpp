@@ -507,8 +507,6 @@ void ConnectionWindow::handleSendHex() {
     foreach (QString token, tokens) {
         bytes.append(token.toInt(nullptr, 16));
     }
-    
-    // qDebug() << "Emitting sendDebugData (hex):" << bytes.toHex(' ');
     emit sendDebugData(bytes);
 }
 
@@ -516,8 +514,6 @@ void ConnectionWindow::handleSendText() {
     QByteArray bytes;
     bytes = ui->lineSend->text().toLatin1();
     bytes.append('\r'); //add carriage return for line ending
-
-    qDebug() << "Emitting sendDebugData (text):" << bytes;
     emit sendDebugData(bytes);
 }
 

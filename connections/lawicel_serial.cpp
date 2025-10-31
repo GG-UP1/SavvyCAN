@@ -499,20 +499,15 @@ void LAWICELSerial::readSerialData()
         if (c == 13) //all lawicel commands end in CR
         {
             qDebug() << "Got CR!";
-            
-            // sendDebug("setTimeStamp = " % QCanBusFrame::TimeStamp::fromMicroSeconds(QDateTime::currentMSecsSinceEpoch() * 1000LL)); // * 1000ul ???
 
             // https://doc.qt.io/qt-6/qcanbusframe-timestamp.html
             // https://doc.qt.io/archives/qt-5.15/qdatetime.html#fromMSecsSinceEpoch
             // http://www.can232.com/docs/can232_v3.pdf
-
-
-            // buildFrame.setTimeStamp(QCanBusFrame::TimeStamp::fromMicroSeconds());
-            // buildFrame.setTimeStamp(QCanBusFrame::TimeStamp::fromMicroSeconds(QDateTime::currentMSecsSinceEpoch() * 1000ul));
-
             
+            // render timestamp based on 1h innterval, uint64_t should handle it without any issues
             _buildTimestamp = (_readElapsedTimer.nsecsElapsed() % (60ULL * 60ULL * 1'000'000'000ULL)) / 1000ULL;
 
+            // apply timestamp if exist on incoming slcan frame with notion that in slcan standard we have only 1 minute interval
             if (data.length() > (5 + mBuildLine.mid(4, 1).toInt() * 2 + 1))
             {
                 //Four bytes after the end of the data bytes.
@@ -522,55 +517,13 @@ void LAWICELSerial::readSerialData()
                 _prevSlcanTimeStamp = slcanTimeStamp;
             }
 
+            // keep support for nasty useSystemTime option, but in better approach
+            if (useSystemTime)
+            {
+                _buildTimestamp += (QDateTime::currentMSecsSinceEpoch() * 1000ULL) - (_readElapsedTimer.nsecsElapsed() / 1000ULL);
+            }
 
-            // else
-            // {
-            //     // ns since connection in 60s loop converted to μs
-            //     buildTimestamp = (_readElapsedTimer.nsecsElapsed() % (60ULL * 1'000'000'000ULL)) / 1000ULL;
-            // }
-            // buildFrame.setTimeStamp(QCanBusFrame::TimeStamp::fromMicroSeconds(buildTimestamp));
-
-            // sendDebug(QString(" %1").arg(buildTimestamp));
-            // sendDebug(QString(" %1").arg(Utility::getFullTimeStampInMicroSeconds(buildFrame)));
-            // sendDebug(QString(" %1").arg(buildFrame.timeStamp().seconds()));
-            // sendDebug(QString(" %1").arg(buildFrame.timeStamp().microSeconds()));
-
-
-            // | Co chcesz uzyskać | Stała                    | Zakres wyniku |
-            // | ----------------- | ------------------------ | ------------- |
-            // | cykl 1 minuty     | `% 60'000'000'000ULL`    | 0 – 60 s      |
-            // | cykl 10 sekund    | `% 10'000'000'000ULL`    | 0 – 10 s      |
-            // | cykl 1 godziny    | `% 3'600'000'000'000ULL` | 0 – 3600 s    |
-
-       
-
-
-            
-            // buildFrame.setTimeStamp(QCanBusFrame::TimeStamp::fromMicroSeconds(usInHourLoop));
-            // sendDebug(QString("------ %1").arg(Utility::getFullTimeStampInMicroSeconds(buildFrame)));
-
-
-            // if (useSystemTime)
-            // {
-            //     // sendDebug("QDateTime" + QDateTime::currentMSecsSinceEpoch() * 1000ul);
-                
-            //     buildFrame.setTimeStamp(QCanBusFrame::TimeStamp::fromMicroSeconds(QDateTime::currentMSecsSinceEpoch() * 1000ul));
-            // }
-            // else
-            // {
-            //     //If total length is greater than command, header and data, timestamps must be enabled.
-            //     if (data.length() > (5 + mBuildLine.mid(4, 1).toInt() * 2 + 1))
-            //     {
-            //         //Four bytes after the end of the data bytes.
-            //         buildTimestamp = mBuildLine.mid(5 + mBuildLine.mid(4, 1).toInt() * 2, 4).toInt(nullptr, 16) * 1000l;
-            //         buildFrame.setTimeStamp(QCanBusFrame::TimeStamp(0, buildTimestamp));
-            //     }
-            //     else
-            //     {
-            //         //Default to system time if timestamps are disabled.
-            //         buildFrame.setTimeStamp(QCanBusFrame::TimeStamp::fromMicroSeconds(QDateTime::currentMSecsSinceEpoch() * 1000ul));
-            //     }
-            // }
+            buildFrame.setTimeStamp(_buildTimestamp);
 
             switch (mBuildLine[0].toLatin1())
             {

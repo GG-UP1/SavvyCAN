@@ -1300,7 +1300,7 @@ bool FrameFileIO::saveCRTDFile(QString filename, const QVector<CANFrame>* frames
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        outFile->write(QString::number(frame->timeStamp().microSeconds() / 1000000.0, 'f', 6).toUtf8());
+        outFile->write(QString::number(frame->fullTimeStamp() / 1000000.0, 'f', 6).toUtf8());
         outFile->putChar(' ');
 
         outFile->write(QString::number(frame->bus + 1).toUtf8());
@@ -2285,7 +2285,7 @@ bool FrameFileIO::writeContinuousNative(const QVector<CANFrame>* frames, int beg
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        continuousFile.write(QString::number(frame->timeStamp().microSeconds()).toUtf8());
+        continuousFile.write(QString::number(frame->fullTimeStamp()).toUtf8());
         continuousFile.putChar(44);
 
         continuousFile.write(QString::number(frame->frameId(), 16).toUpper().rightJustified(8, '0').toUtf8());
@@ -2684,7 +2684,7 @@ bool FrameFileIO::saveLogFile(QString filename, const QVector<CANFrame>* frames)
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        tempStamp = QDateTime::fromMSecsSinceEpoch(frame->timeStamp().microSeconds() / 1000);
+        tempStamp = QDateTime::fromMSecsSinceEpoch(frame->fullTimeStamp() / 1000);
         outFile->write(tempStamp.toString("hh:mm:ss:zzz").toUtf8());
         if (frame->isReceived) outFile->write(" Rx ");
         else outFile->write(" Tx ");
@@ -2874,7 +2874,7 @@ bool FrameFileIO::saveIXXATFile(QString filename, const QVector<CANFrame>* frame
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        tempStamp = QDateTime::fromMSecsSinceEpoch(frame->timeStamp().microSeconds() / 1000);
+        tempStamp = QDateTime::fromMSecsSinceEpoch(frame->fullTimeStamp() / 1000);
         outFile->write("\"" + tempStamp.toString("h:m:s.").toUtf8() + tempStamp.toString("z").rightJustified(3, '0').toUtf8() + "\"");
 
         outFile->write(",\"" + QString::number(frame->frameId(), 16).toUpper().rightJustified(8, '0').toUtf8() + "\"");
@@ -3058,7 +3058,7 @@ bool FrameFileIO::saveCANDOFile(QString filename, const QVector<CANFrame>* frame
 
         if (!frame->hasExtendedFrameFormat())
         {
-            ms = (frame->timeStamp().microSeconds() / 1000);
+            ms = (frame->fullTimeStamp() / 1000);
             id = frame->frameId() & 0x7FF;
             data[0] = (((ms / 1000) % 60) << 2) + ((ms % 1000) >> 8);
             data[1] = (char)(ms & 0xFF);
@@ -3254,7 +3254,7 @@ bool FrameFileIO::saveMicrochipFile(QString filename, const QVector<CANFrame>* f
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        outFile->write(QString::number((frame->timeStamp().microSeconds() / 1000)).toUtf8());
+        outFile->write(QString::number((frame->fullTimeStamp() / 1000)).toUtf8());
         if (frame->isReceived) outFile->write(";RX;");
         else outFile->write(";TX;");
         outFile->write("0x" + QString::number(frame->frameId(), 16).toUpper().rightJustified(8, '0').toUtf8() + ";");
@@ -3557,7 +3557,7 @@ bool FrameFileIO::saveCanDumpFile(QString filename, const QVector<CANFrame> * fr
 
         outFile->write("(");
 
-        tempTime = frame->timeStamp().microSeconds() / 1000000.0;
+        tempTime = frame->fullTimeStamp() / 1000000.0;
         outFile->write(QString::number(tempTime,'f', 6).rightJustified(17, '0').toUtf8());
         outFile->write(") vcan0 ");
 
@@ -4233,7 +4233,7 @@ bool FrameFileIO::saveCabanaFile(QString filename, const QVector<CANFrame>* fram
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        double tempTimeStamp = frame->timeStamp().microSeconds();
+        double tempTimeStamp = frame->fullTimeStamp();
         tempTimeStamp /= 1000000;
 
         outFile->write(QString::number(tempTimeStamp, 'f').toUtf8());

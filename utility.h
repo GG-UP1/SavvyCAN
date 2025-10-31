@@ -177,9 +177,7 @@ public:
     static QVariant formatTimestamp(uint64_t timestamp)
     {
         // timestamp expected μs !!!!!!!!!!!!!!!
-
-        // return (unsigned long long)timestamp;
-
+        
         switch (timeStyle)
         {
         case TS_CLOCK:

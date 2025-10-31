@@ -468,9 +468,7 @@ QVariant CANFrameModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         switch (Column(index.column()))
         {
-        case Column::TimeStamp: 
-            // return thisFrame.fullTimeStamp();
-
+        case Column::TimeStamp:
             // TODO: review overwriteDups?!?!
             //Reformatting the output a bit with custom code
             if (overwriteDups)

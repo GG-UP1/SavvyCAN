@@ -178,29 +178,23 @@ public:
     {
         // timestamp expected μs !!!!!!!!!!!!!!!
 
-        return (unsigned long long)timestamp;
+        // return (unsigned long long)timestamp;
 
         switch (timeStyle)
         {
         case TS_CLOCK:
             return QDateTime::fromMSecsSinceEpoch(timestamp / 1000);
-            break;
+            
         case TS_MILLIS:
             return (double)timestamp / 1000.0;
-            break;
+
         case TS_MICROS:
             return (unsigned long long)(timestamp);
-            break;
+
         case TS_SECONDS:
-            return (double)timestamp / 1000000.0;
-            break;
+            return (double)timestamp / 1'000'000.0;
         }
         return QVariant();
-    }
-
-    static quint64 getFullTimeStampInMicroSeconds(QCanBusFrame frame)
-    {
-        return frame.timeStamp().seconds() * 1'000'000 + frame.timeStamp().microSeconds();
     }
 
     //parses the input string to grab as much of it as possible while staying alpha numeric

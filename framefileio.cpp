@@ -2192,7 +2192,7 @@ bool FrameFileIO::saveNativeCSVFile(QString filename, const QVector<CANFrame>* f
         data = reinterpret_cast<const unsigned char *>(frame->payload().constData());
         dataLen = frame->payload().count();
 
-        quint64 timeStamp = frame->timeStamp().seconds() * 1'000'000 + frame->timeStamp().microSeconds();
+        quint64 timeStamp = frame->fullTimeStamp();
         outFile->write(QString::number(timeStamp).toUtf8());
         outFile->putChar(44);
 

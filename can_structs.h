@@ -19,7 +19,7 @@ public:
     friend bool operator<(const CANFrame& l, const CANFrame& r)
     {
         // why not unsigned?? is there any possible scenatio that ts will be negative?
-        qint64 lStamp = l.timeStamp().seconds() * 1000000 + l.timeStamp().microSeconds(); 
+        qint64 lStamp = l.timeStamp().seconds() * 1000000 + l.timeStamp().microSeconds();
         qint64 rStamp = r.timeStamp().seconds() * 1000000 + r.timeStamp().microSeconds();
         return lStamp < rStamp;
     }

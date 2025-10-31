@@ -239,8 +239,9 @@ uint64_t CANFrameModel::getCANFrameVal(QVector<CANFrame> *frames, int row, Colum
     switch (col)
     {
     case Column::TimeStamp:
+        // TODO: review overwriteDups?!?!
         if (overwriteDups) return frame.timedelta;
-        return Utility::getFullTimeStampInMicroSeconds(frame);
+        return frame.timeStamp().seconds() * 1'000'000 + frame.timeStamp().microSeconds();
     case Column::FrameId:
         return frame.frameId();
     case Column::Extended:
@@ -467,23 +468,18 @@ QVariant CANFrameModel::data(const QModelIndex &index, int role) const
         switch (Column(index.column()))
         {
         case Column::TimeStamp:
-            // ts = 400'000'000;
-            ts = Utility::getFullTimeStampInMicroSeconds(thisFrame);
-            return QString::number(ts.toLongLong());
-            // //Reformatting the output a bit with custom code
-            // if (overwriteDups)
-            // {
-            //     // TODO: fix it !!!
-            //     if (timeStyle == TS_SECONDS) return QString::number(thisFrame.timedelta / 1000000.0, 'f', 5);
-            //     return QString::number(thisFrame.timedelta);
-            // }
-            // else ts = Utility::formatTimestamp(Utility::getFullTimeStampInMicroSeconds(thisFrame));
-            // return ts;
-
-            // if (ts.type() == QVariant::Double) return QString::number(ts.toDouble(), 'f', 5); //never scientific notation, 5 decimal places
-            // if (ts.type() == QVariant::LongLong) return QString::number(ts.toLongLong()); //never scientific notion, all digits shown
-            // if (ts.type() == QVariant::DateTime) return ts.toDateTime().toString(timeFormat); //custom set format for dates and times ... TODO: fix it !!!!
-            // return Utility::formatTimestamp(Utility::getFullTimeStampInMicroSeconds(thisFrame));
+            //Reformatting the output a bit with custom code
+            if (overwriteDups)
+            {
+                if (timeStyle == TS_SECONDS) return QString::number(thisFrame.timedelta / 1000000.0, 'f', 5);
+                return QString::number(thisFrame.timedelta);
+            }
+            else ts = Utility::formatTimestamp(frame.timeStamp().seconds() * 1'000'000 + thisFrame.timeStamp().microSeconds());
+            if (ts.type() == QVariant::Double) return QString::number(ts.toDouble(), 'f', 5); //never scientific notation, 5 decimal places
+            if (ts.type() == QVariant::LongLong) return QString::number(ts.toLongLong()); //never scientific notion, all digits shown
+            if (ts.type() == QVariant::DateTime) return ts.toDateTime().toString(timeFormat); //custom set format for dates and times
+            // return Utility::formatTimestamp(thisFrame.timeStamp().microSeconds()); it has no sense .. it's just ts ;)
+            return ts;
         case Column::FrameId:
             return Utility::formatCANID(thisFrame.frameId(), thisFrame.hasExtendedFrameFormat());
         case Column::Extended:

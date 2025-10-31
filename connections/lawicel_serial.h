@@ -8,7 +8,7 @@
 
 /*************/
 #include <QDateTime>
-    #include <QElapsedTimer>
+#include <QElapsedTimer>
 /*************/
 
 #include "canframemodel.h"

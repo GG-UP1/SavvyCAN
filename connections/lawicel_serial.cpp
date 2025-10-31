@@ -36,12 +36,6 @@ LAWICELSerial::~LAWICELSerial()
 
 void LAWICELSerial::sendDebug(const QString debugText)
 {
-    if (useSystemTime) {
-        debugOutput("useSystemTime 1");
-    } else {
-        debugOutput("useSystemTime 0");
-    }
-
     qDebug() << debugText;
     debugOutput(debugText);
 }

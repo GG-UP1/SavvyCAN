@@ -177,12 +177,6 @@ void MainSettingsDialog::updateSettings()
 {
     QSettings settings;
 
-    // QMessageBox::warning(this, "Warning", "MainSettingsDialog::updateSettings");
-
-    // if (ui->rbSysClock->isChecked()) {
-    //     QMessageBox::warning(this, "Warning", "MainSettingsDialog::updateSettings ui->rbSysClock->isChecked");
-    // }
-
     settings.setValue("Main/UseHex", ui->cbDisplayHex->isChecked());
     settings.setValue("FlowView/AutoRef", ui->cbFlowAutoRef->isChecked());
     settings.setValue("FlowView/UseTimestamp", ui->cbFlowUseTimestamp->isChecked());

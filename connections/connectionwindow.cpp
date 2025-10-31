@@ -517,7 +517,7 @@ void ConnectionWindow::handleSendText() {
     bytes = ui->lineSend->text().toLatin1();
     bytes.append('\r'); //add carriage return for line ending
 
-    // qDebug() << "Emitting sendDebugData (text):" << bytes;
+    qDebug() << "Emitting sendDebugData (text):" << bytes;
     emit sendDebugData(bytes);
 }
 
